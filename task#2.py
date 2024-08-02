@@ -1,21 +1,51 @@
+import matplotlib.pyplot as plt
 import numpy as np
+import scipy.integrate as spi
 
-def monte_carlo_integral(f, a, b, n=10000):
-    x = np.random.uniform(a, b, n)
-    y = np.random.uniform(0, max(f(x)), n)
-    under_curve = y < f(x)
-    integral = (b - a) * max(f(x)) * np.sum(under_curve) / n
-    return integral
 
 def f(x):
-    return x ** 2
+    return np.sin(x)
 
-a = 0
-b = 2
+a = 0  
+b = np.pi  
 
-integral_estimate = monte_carlo_integral(f, a, b)
-print(f"Оцінка інтегралу методом Монте-Карло: {integral_estimate}")
+x = np.linspace(-0.5, np.pi + 0.5, 400)
+y = f(x)
 
-import scipy.integrate as spi
+fig, ax = plt.subplots()
+
+ax.plot(x, y, 'r', linewidth=2)
+
+ix = np.linspace(a, b)
+iy = f(ix)
+ax.fill_between(ix, iy, color='gray', alpha=0.3)
+
+ax.set_xlim([x[0], x[-1]])
+ax.set_ylim([0, max(y) + 0.1])
+ax.set_xlabel('x')
+ax.set_ylabel('f(x)')
+
+ax.axvline(x=a, color='gray', linestyle='--')
+ax.axvline(x=b, color='gray', linestyle='--')
+ax.set_title('Графік інтегрування f(x) = sin(x) від ' + str(a) + ' до ' + str(b))
+plt.grid()
+plt.show()
+
+N = 10000
+
+x_random = np.random.uniform(a, b, N)
+y_random = np.random.uniform(0, 1, N)
+
+points_under_curve = y_random < f(x_random)
+
+integral_mc = (b - a) * np.sum(points_under_curve) / N
+
+print("Інтеграл методом Монте-Карло: ", integral_mc)
+
 result, error = spi.quad(f, a, b)
-print(f"Інтеграл (функція quad): {result}")
+
+print("Інтеграл аналітичний: ", result)
+print("Абсолютна помилка: ", error)
+
+
+
